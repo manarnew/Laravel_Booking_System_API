@@ -11,45 +11,48 @@ class BusinessController extends Controller
 {
     public function index()
     {
-        $business =  Business::paginate(10);
-        return response()->json($business);
+        $businesses = Business::paginate(10);
+        return response()->json($businesses);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
-            'name' => 'required',
-            'opening_hours' => 'required',
-            'status' => 'required',
+            'name' => 'required|string|max:255',
+            'opening_hours' => 'required|string|max:255',
         ]);
+
         if ($validator->fails()) {
-            return response()->json($validator->error()->toJson());
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
         }
-        Business::create(array_merge($validator->validated()));
-        return response()->json('Business is created successfully');
+
+        $business = Business::create($validator->validated());
+        return response()->json(['status' => 'success', 'message' => 'Business created successfully', 'data' => $business], 201);
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        $business = Business::findOrfail($id);
+        $business = Business::findOrFail($id);
+
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
-            'name' => 'required',
-            'opening_hours' => 'required',
-            'status' => 'required',
+            'name' => 'required|string|max:255',
+            'opening_hours' => 'required|string|max:255',
         ]);
+
         if ($validator->fails()) {
-            return response()->json($validator->error()->toJson());
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
         }
-        $business->update(array_merge($validator->validated()));
-        return response()->json('Business is updated successfully');
+
+        $business->update($validator->validated());
+        return response()->json(['status' => 'success', 'message' => 'Business updated successfully', 'data' => $business], 200);
     }
     
-    public function destory($id)
+    public function destroy($id)
     {
-        $business = Business::findOrfail($id);
+        $business = Business::findOrFail($id);
         $business->delete();
-        return response()->json('Business is deleted successfully');
+        return response()->json(['status' => 'success', 'message' => 'Business deleted successfully'], 200);
     }
 }
