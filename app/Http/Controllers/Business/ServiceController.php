@@ -15,7 +15,7 @@ class ServiceController extends Controller
     {
         $business =  Business::select('id')->where('user_id',Auth::id())->first();
         $services = Service::where('business_id',$business->id)->paginate(10);
-        return response()->json($services);
+        return response()->json(Auth::user()->role);
     }
 
     public function store(Request $request)

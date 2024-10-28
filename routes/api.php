@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Business\ServiceController;
 use App\Http\Controllers\ReviewController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('admin')->group(function () {
+Route::middleware(['admin','auth:sanctum'])->group(function () {
     Route::apiResource('/business', BusinessController::class);
     Route::apiResource('/user', UserController::class);
 });

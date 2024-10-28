@@ -38,15 +38,16 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()], 400);
         }
-
-        if (!$token = auth()->attempt($validator->validated())) {
+    
+        if (!auth()->attempt($validator->validated())) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
-
+        
+        $token = auth()->user()->createToken('api-token')->plainTextToken;
         return response()->json([
             'status' => 'success',
             'token' => $token,

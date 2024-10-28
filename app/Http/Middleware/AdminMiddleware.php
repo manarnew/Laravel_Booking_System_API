@@ -13,13 +13,22 @@ class AdminMiddleware
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::user()->role == 'admin'){
-            return $next($request);
-        }else{
-            return response()->json('You are not admin');
+      
+        $user = Auth::user();
+
+        if ($user) {
+            // Check if the user has the 'admin' role
+            if ($user->role === 'admin') {
+                return $next($request);
+            } else {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
+        } else {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
     }
 }
